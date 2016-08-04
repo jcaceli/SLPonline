@@ -15,7 +15,7 @@ $_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
             WHERE 
                 id = :id
         ";
-
+asdjsad
         $query_params = array( 
             ':id' => $id 
         ); 
