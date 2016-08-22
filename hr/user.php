@@ -299,7 +299,7 @@ echo '<img src="../../docs/profilepics/'.$p['name'].'" border="2" alt="myprofile
           ?> 
           <br>
           
-          <span style="font-size:18px;font-weight:200;">
+          <span style="font-size:16px;font-weight:200;">
           <?php
           $fullnamez = $row['firstname'].' '.$row['middlename'].' '.$row['lastname'];
           if ($row['nickname'] != "") {
@@ -349,7 +349,7 @@ if ($_SESSION['permlvl']>0 || ($_SESSION['permlvl']<1 && $_SESSION['id']==$_SESS
         </div>
 
 
-        <div class="col-md-3 wellz" style="padding:1em;text-align:left;border-right:1px solid #ccc">
+        <div class="col-md-3 wellz" style="padding:1em;text-align:left;">
             <span style="color:#ccc;font-size:18px">
               <span id="feelingstat"><?php if ($row['feeling']!="") { echo $row['feeling']."<br><br>"; } else { if ($_SESSION['id']==$_GET['id']) { echo "How are you feeling, ".$row['firstname']."? &nbsp;"; } } ?></span>
             <?php if ($_SESSION['id']==$_GET['id']) { ?>
@@ -403,7 +403,7 @@ try {
 
       <!-- get this inserted div -->
 
-      <div class="col-md-2 " style="padding:1em";>
+      <div class="col-md-2 " style="padding:1em;border-right:2px solid #ccc";>
       <h6>LOGIN ATTEMPTS</h6>
       <div id="container" style="min-width: 200px; height: 200px; max-width: 200px; margin: 0 auto"></div>
 
