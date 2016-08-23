@@ -349,67 +349,75 @@ if ($_SESSION['permlvl']>0 || ($_SESSION['permlvl']<1 && $_SESSION['id']==$_SESS
         </div>
 
 
-        <div class="col-md-3 wellz" style="padding:1em;text-align:left;border-right:1px solid #ccc">
+       <div class="col-md-5" style="padding:1em;text-align:left;border-right:2px solid #ccc">
             <span style="color:#ccc;font-size:18px">
               <span id="feelingstat"><?php if ($row['feeling']!="") { echo $row['feeling']."<br><br>"; } else { if ($_SESSION['id']==$_GET['id']) { echo "How are you feeling, ".$row['firstname']."? &nbsp;"; } } ?></span>
             <?php if ($_SESSION['id']==$_GET['id']) { ?>
               <button type="button" class="btn btn-info" data-toggle="modal" data-target="#feelModal" style="margin-top:-3px;border:0;font-size:12px;background:#18bc9c;padding:2px;padding-right:7px;padding-left:7px"><span class="glyphicon glyphicon-pencil"></span></button><br><br>
             <?php } ?>
-            
           </span>
+            <div class="row"> 
+            <div class="col-md-7">
+       
             <table style="width:100%" id="userdetails">
-              <tr><td style="width:65%;"><b>Email Address:</b> </td><td><?php echo $row['emailaddress'];?></td></tr>
-              <tr><td><b>Contact Number:</b> </td><td><?php echo $row['contactnumber'];?></td></tr>
-              <tr><td><b>Employment Date:</b> </td><td><?php echo $row['employdate'];?></td></tr>
+               <br/>
+               <tr><td style="width:65%;font-size:14px"><b>Email Address:</b> <?php echo $row['emailaddress'];?></td>
+              </tr>
+        
+              <tr><td style="font-size:14px"><b>Contact Number:</b><?php echo $row['contactnumber'];?></td></tr>
+              <tr><td style="font-size:14px"><b>Employment Date:</b><?php echo $row['employdate'];?></td></tr>
+               
               <?php if ($_SESSION['permlvl']>0) { ?>
-              <tr style="color:#d9534f"><td><b>Employment Status:</b> </td><td><?php echo $row['employstatus'];?> (Hidden)</td></tr>
-              <tr style="color:#d9534f"><td><b>Fund Source:</b> </td><td><?php echo $row['fundsource'];?> (Hidden)</td></tr>
-              <tr style="color:#d9534f"><td><b>Birthdate:</b> </td><td><?php echo $row['birthdate'];?> (Hidden)</td></tr>
+
+              <tr style="color:#d9534f;font-size:14px"><td><b>Employment Status:</b></td><td> <?php echo $row['employstatus'];?> (Hidden)</td></tr>
+              <tr style="color:#d9534f;font-size:14px"><td><b>Fund Source:</b></td><td> <?php echo $row['fundsource'];?> (Hidden)</td></tr>
+              <tr style="color:#d9534f;font-size:14px"><td><b>Birthdate:</b></td><td> <?php echo $row['birthdate'];?> (Hidden)</td></tr>
+             </table>
+
+              </div>
+                  <div class="col-md-5" style="padding:1em;";>
+                      <h6 style="text-align:center">LOGIN ATTEMPTS</h6>
+                      <div id="container" style="min-width: 200px; height: 200px; max-width: 200px; margin: 0 auto"></div>
+                </div>
+          </div>
+                     
+          <div class="row">   
+           <div class="col-md-11">
               <?php } ?>
-              <tr><td style="visibility:none;color:#fff">.</td></tr>
-              <tr><td colspan="2"><b>Working Groups &nbsp;<span class="glyphicon glyphicon-question-sign" id="tooltip1" data-toggle="popover" data-original-title="Technical Working Groups" data-content="<span class='glyphicon glyphicon-star' style='color:#ffcc09'></span> - Indicates head / focal person<br><b>NITWG</b> - National Inter-agency TWG<br><b>DSWD</b> - TWG within DSWD<br><b>SLP</b> - TWG within SLP" rel="popover" data-placement="top" data-trigger="hover" ></span> &nbsp;<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#requestTWG" style="margin-top:2px;padding:0;padding-left:3px;padding-right:3px;font-size:11px;font-weight:bold">Request Change</button> &nbsp;<?php if ($_SESSION['id']==9) { echo '<button type="button" class="btn btn-info" data-toggle="modal" data-target="#twgmodal" style="margin-top:2px;padding:0;padding-left:3px;padding-right:3px;font-weight:bold;font-size:11px">Add</button>'; } ?></b></td></tr>
+         <table style="width:100%" id="userdetails">
+               <tr><td style="visibility:none;color:#fff">.</td></tr>
+              <tr><td colspan="2" style="font-size:14px"><b>Working Groups &nbsp;<span class="glyphicon glyphicon-question-sign" id="tooltip1" data-toggle="popover" data-original-title="Technical Working Groups" data-content="<span class='glyphicon glyphicon-star' style='color:#ffcc09'></span> - Indicates head / focal person<br><b>NITWG</b> - National Inter-agency TWG<br><b>DSWD</b> - TWG within DSWD<br><b>SLP</b> - TWG within SLP" rel="popover" data-placement="top" data-trigger="hover" ></span> &nbsp;<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#requestTWG" style="margin-top:2px;padding:0;padding-left:3px;padding-right:3px;font-size:11px;font-weight:bold">Request Change</button> &nbsp;<?php if ($_SESSION['id']==9) { echo '<button type="button" class="btn btn-info" data-toggle="modal" data-target="#twgmodal" style="margin-top:2px;padding:0;padding-left:3px;padding-right:3px;font-weight:bold;font-size:11px">Add</button>'; } ?></b></td></tr>
+                                  <?php
+                                  try {
+                                    $stmt3 = $db->prepare("SELECT groupname, groupdesc, isactive, groupleader FROM HRgroups WHERE HRDBid = :HRDBid");
+                                    $stmt3->bindParam(':HRDBid', $_GET['id']);
+                                    $stmt3->execute();
+                                  } catch(PDOException $e) {
+                                      echo "Error: " . $e->getMessage();
+                                  }//endtry
 
-<?php
-try {
-  $stmt3 = $db->prepare("SELECT groupname, groupdesc, isactive, groupleader FROM HRgroups WHERE HRDBid = :HRDBid");
-  $stmt3->bindParam(':HRDBid', $_GET['id']);
-  $stmt3->execute();
-} catch(PDOException $e) {
-    echo "Error: " . $e->getMessage();
-}//endtry
-
-    while ($row4 = $stmt3->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
-      if ($row4[2]=="1") {
-        $row4[2]="Active";
-      } else {
-        $row4[2]="Inactive";
-      }
-      if ($row4[3]==1) {
-        $row4[3]=" &nbsp;<span class='glyphicon glyphicon-star' style='color:#ffcc09'></span>";
-      } else {
-        $row4[3]="";
-      }
-      if ($row4[1]==null) {
-        echo '<tr><td style="font-size:12px">'.$row4[0].$row4[3].'</td><td style="font-size:13px;"><center>'.$row4[2].'</center></td></tr>'; 
-      } else {
-        echo '<tr><td style="font-size:12px">'.$row4[0].$row4[3].'</td><td style="font-size:13px;"><center>'.$row4[1].'-'.$row4[2].'</center></td></tr>'; 
-      }
-    }
-?>
+                                      while ($row4 = $stmt3->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+                                        if ($row4[2]=="1") {
+                                          $row4[2]="Active";
+                                        } else {
+                                          $row4[2]="Inactive";
+                                        }
+                                        if ($row4[3]==1) {
+                                          $row4[3]=" &nbsp;<span class='glyphicon glyphicon-star' style='color:#ffcc09'></span>";
+                                        } else {
+                                          $row4[3]="";
+                                        }
+                                        if ($row4[1]==null) {
+                                          echo '<tr><td style="font-size:12px">'.$row4[0].$row4[3].'</td><td style="font-size:13px;"><center>'.$row4[2].'</center></td></tr>'; 
+                                        } else {
+                                          echo '<tr><td style="font-size:12px">'.$row4[0].$row4[3].'</td><td style="font-size:13px;"><center>'.$row4[1].'-'.$row4[2].'</center></td></tr>'; 
+                                        }
+                                      }
+                                  ?>
             </table>
-        </div>
-
-
-
-      <!-- get this inserted div -->
-
-      <div class="col-md-2 " style="padding:1em";>
-      <h6>LOGIN ATTEMPTS</h6>
-      <div id="container" style="min-width: 200px; height: 200px; max-width: 200px; margin: 0 auto"></div>
-
-      </div>
-      <!-- upto this -->
-
+            </div>
+          </div>
+</div> 
 
 
 
@@ -588,7 +596,7 @@ $('#viewdata').on( 'click', 'tbody tr', function () {
                               </div><!-- /btn-group -->
                             </div><!-- /input-group -->
                         </div>
-
+ema
                         <div class="form-group">
                             <div class="input-group">
                               <input type="text" class="form-control" aria-label="..." placeholder="End Date" id="enddate" name="enddate">
