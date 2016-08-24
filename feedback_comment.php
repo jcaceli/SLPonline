@@ -257,27 +257,7 @@ body {
 </head>
 <body>
 
-<!--
-  <div id="slideout">
-    <img src="http://img.usabilitypost.com.s3.amazonaws.com/1104/css_slideout/feedback.png" alt="Feedback" />
-    <div id="slideout_inner">
-      <span id="loadicon2" class="glyphicon glyphicon-refresh spin" style="color:#fff;font-size:50px;padding:10px;"></span>
-      <div id="formz">
-      <form>
-          <div class="form-group">
-            <div class="col-sm-12">
-                <textarea name="feedback" maxlength="250" class="form-control" id="feedback" placeholder="Any comments or suggestions are welcome!" style="resize:none;padding-top:8px;padding-bottom:8px;" rows="3"></textarea>
-            </div>
-          </div>
-      </form>
-          <div class="form-group">
-              <button class="btn btn-primary" id="sendfeedback" style="padding:4px;margin-left:1em">Submit</button>
-          </div>
-      
-      </div>
-    </div>
-  </div>
--->
+
 <?php
 include "nav.php";
 
@@ -307,7 +287,7 @@ if ($_SESSION['permlvl'] < 1) {
 
       <div class="loader vcenter" style="display:none;" id="loadoverlay">
     <div class="spinner" style="margin-top:-2em;text-align:center">
-      <h3 style="font-weight:normal;display:block">Sending your feedback..</h3><br>
+      <h3 style="font-weight:normal;display:block">Sending..</h3><br>
       <div class="bounce1"></div>
       <div class="bounce2"></div>
       <div class="bounce3"></div>
