@@ -1,0 +1,5 @@
+# pack-refs with: peeled fully-peeled 
+1916b22a6c8888abb5291d1acfa1bf401775b688 refs/heads/jmigdelacruz-patch-1
+e90c94d1731cdfb2cf190168ddec520f7ebdf80f refs/heads/jmigdelacruz-patch-2
+edf5c71b8be1d075767dcb6fbcd4bce2463223b2 refs/heads/master
+b270832e0cef5b851a064eaab69d236fbca21a0d refs/heads/patch-14
