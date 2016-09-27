@@ -1,6 +1,6 @@
 <?php
 require "../zxcd9.php";
-
+ $date2=date("mdY");
 if(!empty($_POST)) 
 { 
     if($_POST['action'] == "submitpass") 
@@ -9,7 +9,7 @@ if(!empty($_POST))
       
 				try 	
                 	{	
-                   
+                  
                      $stmt = $db->prepare("INSERT INTO bk_step1
                      (
                      hrdbid,
@@ -114,7 +114,7 @@ if(!empty($_POST))
 
                        ");
                       $stmt->bindParam(':id',$_SESSION['id']);
-                      $stmt->bindParam(':dt', date("mdY"));
+                      $stmt->bindParam(':dt', $date2);
           					  $stmt->bindParam(':projectname', $_POST['projectname']);
           					  $stmt->bindParam(':region', $_POST['region']);
           					  $stmt->bindParam(':province', $_POST['province']);
@@ -206,7 +206,7 @@ if($_POST['action'] == "submitpass2")
 
                           $stmt1->bindParam(':id1',$id1);    
                           $stmt1->bindParam(':id2',$_SESSION['id']);
-                          $stmt1->bindParam(':dt', date("mdY"));
+                          $stmt1->bindParam(':dt', $date2);
                           $stmt1->bindParam(':rationale', $_POST['rationale']);
                           $stmt1->bindParam(':strategies', $_POST['strategies']);
                           $stmt1->bindParam(':projecthistory', $_POST['projecthistory']);
@@ -254,7 +254,7 @@ if($_POST['action'] == "submitpass3")
 
                           $stmt1->bindParam(':id3',$id3);    
                           $stmt1->bindParam(':id4',$_SESSION['id']);
-                          $stmt1->bindParam(':dt', date("mdY"));
+                          $stmt1->bindParam(':dt', $date2);
                           $stmt1->bindParam(':major', $_POST['major']);
                           $stmt1->bindParam(':impact', $_POST['impact']);
                           $stmt1->bindParam(':result', $_POST['result']);
