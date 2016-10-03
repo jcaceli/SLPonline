@@ -7,7 +7,7 @@ function getFilesize($bytes, $decimals = 2) {
 }
 if (isset($_GET['id'])) {
   $_GET  = filter_input_array(INPUT_GET, FILTER_SANITIZE_NUMBER_INT);
-  $stmt = $db->prepare("SELECT m.remarks, m.doctype, m.added, m.title, m.filesize, m.filename, m.downloads, n.firstname, n.id as hrid, m.author FROM DOCDB m LEFT JOIN HRDB n ON m.hrdbid=n.id WHERE m.id = :id");
+  $stmt = $db->prepare("SELECT m.remarks, m.doctype, m.added, m.title, m.filesize, m.filename, n.firstname, n.id as hrid, m.author FROM DOCDB m LEFT JOIN HRDB n ON m.hrdbid=n.id WHERE m.id = :id");
   $stmt->bindParam(':id', $_GET['id']);
   $stmt->execute();
   $rowdv = $stmt->fetch();
@@ -272,15 +272,14 @@ h3 {
       <div class="row">
         <div class="col-sm-3"><center>
           <div class="file-icon file-icon-lg" data-type="<?php echo $file_ext; ?>" style="margin-bottom:10px"></div>
-          <span class="label label-info" style="font-weight:400;font-size:14px;cursor:pointer" id="goDL"><span style="padding-top:10px"><span class="glyphicon glyphicon-download" style="vertical-align:middle;font-size:14px;top:-1px"></span></span> Download</span>
+          <a href="http://slp.ph/docs/<?php echo $rowdv['filename']; ?>" download><span class="label label-info" style="font-weight:400;font-size:14px;"><span style="padding-top:10px"><span class="glyphicon glyphicon-download" style="vertical-align:middle;font-size:14px;top:-1px"></span></span> Download</span></a>
         </div>
         <div class="col-sm-6" style="text-align:left">
           <b><?php echo $rowdv['title']; ?> </b><span class="smallfont">(<?php echo getFilesize($rowdv['filesize']); ?>)</span><br>
           <div class="smallfont"> 
             <span class="colorgray"><?php echo $rowdv['doctype']; ?><br>
             Uploader:</span> <a href="http://slp.ph/hr/user.php?id=<?php echo $rowdv['hrid']; ?>" style="color:#00ADDe"><?php echo $rowdv['firstname']; ?></a><br>
-            <span class="colorgray">Date Uploaded:</span> <?php echo $rowdv['added']; ?><br>
-            <span class="colorgray">Downloads:</span> <?php echo $rowdv['downloads']; ?><br><br>
+            <span class="colorgray">Date Uploaded:</span> <?php echo $rowdv['added']; ?><br><br>
             <span class="colorgray">Remarks/Summary:<br></span>
             <span style="line-height:0.7"><?php echo nl2br($rowdv['remarks']); ?></span>
           </div>
@@ -292,11 +291,11 @@ h3 {
       </div>
 
       <div class="row" style="margin-top:1em;text-align:right;padding-right:1em;color:#00ADDe;font-size:14px">
-        <?php if ($_SESSION['permlvl']>0||$_SESSION['id']==$rowdv['hrid']) { ?> 
         <span class="link-hover" id="reupfile"><span class="glyphicon glyphicon-upload"></span> Reupload &nbsp;</span>
-        <span class="link-hover editbtn" id="editfile"><span class="glyphicon glyphicon-pencil"></span> Edit &nbsp; </span>
+      
+          <span class="link-hover editbtn" id="editfileadmin"><span class="glyphicon glyphicon-pencil"></span> Edit &nbsp; </span>
+ 
         <span class="link-hover delbtn" id="delfile"><span class="glyphicon glyphicon-trash"></span> Delete</span>
-        <?php } ?>
       </div>
 
     </div>
@@ -365,25 +364,6 @@ h3 {
       </div>
       <!-- Modal -->
 <script>
-$('#goDL').click(function(){
-  var formData = {
-      'action'        : "countDL",
-      'docdbid'       : "<?php echo $_GET['id']; ?>",
-    };
-        $.ajax({
-          type: "POST",
-          url: "functions.php",
-          data: formData,
-          success: function(data) {
-                  if (data == "counted") {
-                    location.href="http://slp.ph/docs/<?php echo $rowdv['filename']; ?>"
-                  } else {
-                    alert(data);
-                  }
-          }
-
-      });
-});
 $("#resendfile").click(function(event) {
 event.preventDefault();
 event.stopImmediatePropagation();
@@ -416,6 +396,22 @@ $("#editfile").click(function(event) {
           success: function(data) {
                   if (data == "visitpage") {
                     location.href="editdetails.php"
+                  }
+                }
+
+          });
+});
+
+
+$("#editfileadmin").click(function(event) {
+        var formData = { 'editid1' : '<?php echo $_GET["id"]; ?>' };
+        $.ajax({
+          type: "POST",
+          url: "editdetails_admindoc.php",
+          data: formData,
+          success: function(data) {
+                  if (data == "visitpage") {
+                    location.href="editdetails_admindoc.php"
                   }
                 }
 
@@ -478,8 +474,7 @@ $("#delfile").click(function(event) {
                    {
                       if (data == "deleted") {
                         alert("Success!");
-                        
-                        location.href = "index.php";
+                        location.href = "http://slp.ph/vrcabinet";
                       } else {
                         alert(data);
                       }
