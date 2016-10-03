@@ -1,11 +1,11 @@
 <?php
 require "../zxcd9.php";
-require("../mailer/PHPMailerAutoload.php");
-require("../mailer/class.phpmailer.php");
-require("../mailer/class.smtp.php");
+///require("../mailer/PHPMailerAutoload.php");
+//require("../mailer/class.phpmailer.php");
+//require("../mailer/class.smtp.php");
 
 function upload_dir(){
-  $dir = $_SERVER['DOCUMENT_ROOT']."/docs/";
+ $dir = $_SERVER['DOCUMENT_ROOT']."/SLP.PH22/docs/";
   return($dir);
 }
 
@@ -15,7 +15,7 @@ global $db;
                 $emailarray = explode(",", $emailarray);
 
                 try {
-                  $idarray = [];
+            //      $idarray = [];
                   foreach($emailarray as $email) {
                     $stmt = $db->prepare("SELECT id FROM HRDB WHERE emailaddress = '".$email."'");
                     $stmt->execute();
@@ -33,8 +33,7 @@ global $db;
 
                 try {
                     foreach($idarray as $id) {
-                      $linkadd = "http://".$_SERVER[HTTP_HOST];
-                      addNotificationDoc($id, $_SESSION['firstname'], "uploaded ", $_POST['doctype'].": ".$_POST['docsubject'], $linkadd."/vrcabinet/docview.php?id=".$refidz,$refidz);
+                      addNotificationDoc($id, $_SESSION['firstname'], "uploaded ", $_POST['doctype'].": ".$_POST['docsubject'], "http://slp.ph/vrcabinet/docview.php?id=".$refidz);
                     }
                 } catch(PDOException $e) {
                     echo "Error: " . $e->getMessage();
@@ -51,10 +50,10 @@ ob_start();
 <table cellpadding="0" cellspacing="0" style="border-radius:4px;border:1px #dceaf5 solid;border-collapse:none" border="0" align="center">
 <tr><td><table cellpadding="0" cellspacing="0" style="line-height:25px" border="0" align="center"><tr><td colspan="3" height="30"></td></tr><tr><td width="36"></td>
 <td width="454" align="center" style="color:#444444;border-collapse:collapse;font-size:9pt;font-family:proxima_nova,&#39;Open Sans&#39;,&#39;Lucida Grande&#39;,&#39;Segoe UI&#39;,Arial,Verdana,&#39;Lucida Sans Unicode&#39;,Tahoma,&#39;Sans Serif&#39;;max-width:454px" valign="top">
-<img src="http://www.slp.ph/docs/<?php echo $uploadname;?>" style="height:auto !important;max-width:500px !important;width: 100% !important;">
-Cant see this image? <a href="http://slp.ph/docs/<?php echo $uploadname; ?>" style="color:#4583ed">Click here</a><br>
+<img src="../docs/<?php echo $uploadname;?>" style="height:auto !important;max-width:500px !important;width: 100% !important;">
+Cant see this image? <a href="../docs/<?php echo $uploadname; ?>" style="color:#4583ed">Click here</a><br>
 <td width="36"></td></tr><tr><td colspan="3" height="36"></td></tr></table></td></tr></table><table cellpadding="0" cellspacing="0" align="center" border="0"><tr><td height="10"></td></tr><tr><td style="padding:0;border-collapse:collapse"><table cellpadding="0" cellspacing="0" align="center" border="0"><tr style="color:#a8b9c6;font-size:11px;font-family:proxima_nova,&#39;Open Sans&#39;,&#39;Lucida Grande&#39;,&#39;Segoe UI&#39;,Arial,Verdana,&#39;Lucida Sans Unicode&#39;,Tahoma,&#39;Sans Serif&#39;"><td width="200" align="left"></td>
-<td width="328" align="right"><span style="font-size:12px">Sent through <a href="http://www.slp.ph" style="text-decoration:none;color:#4583ed">SLP Online</a> by <span id="emailfrom"><?php echo $_SESSION["fullname"]; ?></span></span><br></td></td>
+<td width="328" align="right"><span style="font-size:12px">Sent through <a href="http://slp.ph" style="text-decoration:none;color:#4583ed">SLP Online</a> by <span id="emailfrom"><?php echo $_SESSION["fullname"]; ?></span></span><br></td></td>
 </tr></table></td></tr></table></td></tr></table></center></div></div>
 <?php
               $myvar = ob_get_clean();
@@ -99,16 +98,13 @@ ob_start();
               $mail->IsSMTP();
               
               $mail->SMTPAuth = true;
-        $mail->SMTPSecure = 'ssl';
-        $mail->Host = "smtp.gmail.com";
-        $mail->Port = 465;
-        $mail->Username = "info@slp.ph";
-        $mail->Password = "turtles98!!";
-        $mail->From = "info@slp.ph";
-        $mail->FromName = "SLP";
-
+              $mail->SMTPSecure = 'ssl';
+              $mail->Host = "gator4192.hostgator.com";
+                $mail->Port = 465;
                 $mail->IsHTML(true);
-
+                $mail->Username = "noreply@slp.ph";
+                $mail->Password = "turtles98!!";
+              $mail->SetFrom($from,$fromname);
               $mail->Subject = $_POST['docsubject'];
               $mail->Body = $myvar;
 
@@ -127,15 +123,13 @@ if(!empty($_POST))
 //filter input
 //$_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
 
-
-
     if($_POST['action'] == "getemails_regions") {
         $id = test_input($_POST['id']);
 
         $stmt = $db->prepare("SELECT emailaddress FROM HRDB WHERE region = :region");
         $stmt->bindParam(':region', $_POST['filter']);
         $stmt->execute();
-        $emailarray = [];
+       // $emailarray = [];
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $emailarray[] = $row['emailaddress'];
@@ -149,7 +143,7 @@ if(!empty($_POST))
         $stmt = $db->prepare("SELECT emailaddress FROM HRDB WHERE designation=:designation");
         $stmt->bindParam(':designation', $_POST['filter']);
         $stmt->execute();
-        $emailarray = [];
+     //   $emailarray = [];
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $emailarray[] = $row['emailaddress'];
@@ -162,7 +156,7 @@ if(!empty($_POST))
 
         $stmt = $db->prepare("SELECT emailaddress FROM HRDB WHERE region ='NPMO'");
         $stmt->execute();
-        $emailarray = [];
+       // $emailarray = [];
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $emailarray[] = $row['emailaddress'];
@@ -176,7 +170,7 @@ if(!empty($_POST))
         $stmt = $db->prepare("SELECT emailaddress FROM HRDB m LEFT JOIN HRgroups n ON m.id=n.hrdbid WHERE m.region ='NPMO' AND n.groupname=:groupname");
         $stmt->bindParam(':groupname', $_POST['filter']);
         $stmt->execute();
-        $emailarray = [];
+      //  $emailarray = [];
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $emailarray[] = $row['emailaddress'];
@@ -190,7 +184,7 @@ if(!empty($_POST))
         $stmt = $db->prepare("SELECT emailaddress FROM HRDB WHERE id=:id ");
         $stmt->bindParam(':id', $_POST['filter']);
         $stmt->execute();
-        $emailarray = [];
+       //  $emailarray = [];
 
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $emailarray[] = $row['emailaddress'];
@@ -241,7 +235,7 @@ if(!empty($_POST))
         $stmt->bindParam(':id', $docid);
         $stmt->execute();
 
-        $direc = $_SERVER['DOCUMENT_ROOT']."/docs/".$_POST['docfilename'];
+        $direc = $_SERVER['DOCUMENT_ROOT']."/slp.ph22/docs/".$_POST['docfilename'];
         unlink($direc);
 
         echo "deleted";
@@ -284,11 +278,84 @@ if(!empty($_POST))
                 }
             }
             
-            $direc = $_SERVER['DOCUMENT_ROOT']."/docs/".$_POST['docfilename'];
+            $direc = $_SERVER['DOCUMENT_ROOT']."/SLP.22/docs/".$_POST['docfilename'];
             unlink($direc);
 
             echo "Success";
     }
+
+
+    if($_POST['action'] == "reuploadadmin") {
+            $ext=date("mdY");
+            $maxsize=9000000;
+            $FILE_EXTS = array('pdf','jpg','jpeg','png','xls','xlsx','doc','docx','zip');
+
+            $file_name = $_FILES['file']['name'];
+            $file_name = preg_replace("/ /", "-", $file_name);
+            $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+            $file_size = $_FILES['file']['size'];
+
+            if($file_name=="") {
+              die("No file selected");
+            }
+            if (!in_array($file_ext, $FILE_EXTS)){
+              die("Selected file is invalid.");
+            }
+            if($_FILES['file']['size']>$maxsize) {
+                die("Filesize exceeded");
+            }
+
+            $uploaddir = upload_dir();
+            $uploadname = $ext.'_'.$_FILES['file']['name'];
+            $uploadfile = $uploaddir.$uploadname;
+
+                try{
+                       $edit = $db->prepare("Select filename from docdb where id=:idoc");
+                        $edit->bindParam(':idoc',$_SESSION['editid']);
+                        $edit->execute();
+                           $edit_row = $edit->fetch(PDO::FETCH_ASSOC);
+                        unlink('/SLP.PH22
+                            /docs/'.$edit_row['filename']);
+                    }catch(PDOException $e){
+                      echo "Error. ". $e->getMessage();
+                    }
+
+            if(is_uploaded_file($_FILES['file']['tmp_name'])) {
+
+                try {
+                    move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile);
+                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, filename=:filename, filesize=:filesize, remarks=:remarks, added=:added, hrdbid=:hrdbid, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,destoffice=:destoffice, destname=:destname,resdate=:resdate WHERE id=:id"); 
+                    $stmt->bindParam(':id', $_SESSION['editid']);
+                    $stmt->bindParam(':doctype', $_POST['doctype']);
+                    $stmt->bindParam(':title', $_POST['docsubject']);
+                    $stmt->bindParam(':author', $_POST['author']);
+                    $stmt->bindParam(':filename', $uploadname);
+                    $stmt->bindParam(':filesize', $file_size);
+                    $stmt->bindParam(':remarks', $_POST['remarks']);
+                    $stmt->bindParam(':added', date("Y-m-d"));
+                    $stmt->bindParam(':hrdbid', $_SESSION['id']);
+                    $stmt->bindParam(':admintype', $_POST['admintype']);
+                    $stmt->bindParam(':logtype', $_POST['logtype']);
+                    $stmt->bindParam(':refnumber', $_POST['refnumber']);
+                    $stmt->bindParam(':sourceoffice', $_POST['sourceoffice']);
+                    $stmt->bindParam(':sourcename', $_POST['sourcename']);
+                    $stmt->bindParam(':destoffice', $_POST['destoffice']);
+                    $stmt->bindParam(':destname', $_POST['destname']);
+                    $stmt->bindParam(':resdate', $_POST['resdate']);
+
+
+                    $stmt->execute();
+                } catch(PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+         //  $direc = $_SERVER['DOCUMENT_ROOT']."/SLP.22/docs/".$uploadname;
+          //  unlink($direc);
+            echo "Success";
+    }
+
+
+
 
     if($_POST['action'] == "resend") {
             $uploadname = $_POST['docfilename'];
@@ -296,19 +363,6 @@ if(!empty($_POST))
             sendEmail($_POST['docid'],$uploadname,$doctype);
             byteMe($_SESSION['id'],'resend',1);
             echo "Success";
-    }
-
-    if($_POST['action'] == "countDL") {
-        $docdbidz = test_input($_POST["docdbid"]);  
-            try {
-                    $stmt = $db->prepare("UPDATE DOCDB SET downloads=downloads+1 WHERE id=:id");
-                    $stmt->bindParam(':id', $docdbidz);
-                    $stmt->execute();
-                } catch(PDOException $e) {
-                    echo "Error: " . $e->getMessage();
-                }
-            byteMe($_SESSION['id'],'dl',0.10);
-            echo "counted";
     }
 
     if($_POST['action'] == "upload") {
@@ -354,29 +408,36 @@ if(!empty($_POST))
             if(move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
                 
                 try {
-                    $stmt = $db->prepare("INSERT IGNORE INTO DOCDB (doctype,title,author,filename,filesize,remarks,added,hrdbid) VALUES (:doctype,:title,:author,:filename,:filesize,:remarks,:added,:hrdbid)");
+                    $stmt = $db->prepare("INSERT IGNORE INTO DOCDB (doctype,title,author,filename,filesize,remarks,added,hrdbid,admindoctype,logtype,referenceno,sourceoffice,sourcename,destoffice,destname,resdate) VALUES (:doctype,:title,:author,:filename,:filesize,:remarks,:added,:hrdbid,:admintype,:logtype,:refnumber,:sourceoffice,:sourcename,:destoffice,:destname,:resdate)");
                     $stmt->bindParam(':doctype', $doctype);
                     $stmt->bindParam(':title', $_POST['docsubject']);
-                    $stmt->bindParam(':author', $author);
+                    $stmt->bindParam(':author', $_POST['author']);
                     $stmt->bindParam(':filename', $uploadname);
                     $stmt->bindParam(':filesize', $file_size);
                     $stmt->bindParam(':remarks', $_POST['remarks']);
                     $stmt->bindParam(':added', date("Y-m-d"));
                     $stmt->bindParam(':hrdbid', $_SESSION['id']);
+                    $stmt->bindParam(':admintype', $_POST['admintype']);
+                    $stmt->bindParam(':logtype', $_POST['logtype']);
+                    $stmt->bindParam(':refnumber', $_POST['refnumber']);
+                    $stmt->bindParam(':sourceoffice', $_POST['sourceoffice']);
+                    $stmt->bindParam(':sourcename', $_POST['sourcename']);
+                    $stmt->bindParam(':destoffice', $_POST['destoffice']);
+                    $stmt->bindParam(':destname', $_POST['destname']);
+                    $stmt->bindParam(':resdate', $_POST['resdate']);
+                     
+                     
                     $stmt->execute();
                 } catch(PDOException $e) {
                     echo "Error: " . $e->getMessage();
                 }
 
-            if ($doctype=="Policy Document" || $doctype=="Template / Form" || $doctype=="Manual / Guide") {
-                byteMe($_SESSION['id'],'upload',20);
-            } else {
-                byteMe($_SESSION['id'],'upload',3);
-            }
+                
 
           if ($_POST['switch']>0) {
                 $refid = $db->lastInsertId();
-                sendEmail($refid,$uploadname,$doctype);                
+                sendEmail($refid,$uploadname,$doctype);
+                byteMe($_SESSION['id'],'upload',3);
                 echo "Success";
           } else {
             echo "Success";
