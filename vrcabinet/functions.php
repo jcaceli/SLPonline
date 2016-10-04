@@ -61,7 +61,6 @@ Cant see this image? <a href="http://slp.ph/docs/<?php echo $uploadname; ?>" sty
 } else {
 ob_start();
 ?>
-
 <div class="bodycontainer" style="margin-top:1em;margin-bottom:1em">
 <div style="padding:0;width:100%!important;margin:0;" marginheight="0" marginwidth="0"><center><table cellpadding="8" cellspacing="0" style="padding:0;width:100%!important;background:#ffffff;margin:0;background-color:#ffffff" border="0"><tr><td valign="top">
 <table cellpadding="0" cellspacing="0" style="border-radius:4px;border:1px #dceaf5 solid;border-collapse:inherit" border="0" align="center"><tr><td colspan="3" height="6"></td></tr><tr style="line-height:0px"><td width="100%" style="font-size:0px" align="center" height="1">
@@ -289,7 +288,74 @@ if(!empty($_POST))
 
             echo "Success";
     }
+if($_POST['action'] == "reuploadadmin") {
+            $ext=date("mdY");
+            $maxsize=9000000;
+            $FILE_EXTS = array('pdf','jpg','jpeg','png','xls','xlsx','doc','docx','zip');
 
+            $file_name = $_FILES['file']['name'];
+            $file_name = preg_replace("/ /", "-", $file_name);
+            $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+            $file_size = $_FILES['file']['size'];
+
+            if($file_name=="") {
+              die("No file selected");
+            }
+            if (!in_array($file_ext, $FILE_EXTS)){
+              die("Selected file is invalid.");
+            }
+            if($_FILES['file']['size']>$maxsize) {
+                die("Filesize exceeded");
+            }
+
+            $uploaddir = upload_dir();
+            $uploadname = $ext.'_'.$_FILES['file']['name'];
+            $uploadfile = $uploaddir.$uploadname;
+
+                try{
+                       $edit = $db->prepare("Select filename from docdb where id=:idoc");
+                        $edit->bindParam(':idoc',$_SESSION['editid']);
+                        $edit->execute();
+                           $edit_row = $edit->fetch(PDO::FETCH_ASSOC);
+                        unlink('/SLP.PH22
+                            /docs/'.$edit_row['filename']);
+                    }catch(PDOException $e){
+                      echo "Error. ". $e->getMessage();
+                    }
+
+            if(is_uploaded_file($_FILES['file']['tmp_name'])) {
+
+                try {
+                    move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile);
+                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, filename=:filename, filesize=:filesize, remarks=:remarks, added=:added, hrdbid=:hrdbid, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,destoffice=:destoffice, destname=:destname,resdate=:resdate WHERE id=:id"); 
+                    $stmt->bindParam(':id', $_SESSION['editid']);
+                    $stmt->bindParam(':doctype', $_POST['doctype']);
+                    $stmt->bindParam(':title', $_POST['docsubject']);
+                    $stmt->bindParam(':author', $_POST['author']);
+                    $stmt->bindParam(':filename', $uploadname);
+                    $stmt->bindParam(':filesize', $file_size);
+                    $stmt->bindParam(':remarks', $_POST['remarks']);
+                    $stmt->bindParam(':added', date("Y-m-d"));
+                    $stmt->bindParam(':hrdbid', $_SESSION['id']);
+                    $stmt->bindParam(':admintype', $_POST['admintype']);
+                    $stmt->bindParam(':logtype', $_POST['logtype']);
+                    $stmt->bindParam(':refnumber', $_POST['refnumber']);
+                    $stmt->bindParam(':sourceoffice', $_POST['sourceoffice']);
+                    $stmt->bindParam(':sourcename', $_POST['sourcename']);
+                    $stmt->bindParam(':destoffice', $_POST['destoffice']);
+                    $stmt->bindParam(':destname', $_POST['destname']);
+                    $stmt->bindParam(':resdate', $_POST['resdate']);
+
+
+                    $stmt->execute();
+                } catch(PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+         //  $direc = $_SERVER['DOCUMENT_ROOT']."/SLP.22/docs/".$uploadname;
+          //  unlink($direc);
+            echo "Success";
+    }
     if($_POST['action'] == "resend") {
             $uploadname = $_POST['docfilename'];
             $doctype = $_POST['doctype'];
@@ -298,6 +364,91 @@ if(!empty($_POST))
             echo "Success";
     }
 
+  if($_POST['action'] == "upload") {
+            $ext=date("mdY");
+            $maxsize=9000000;
+            $FILE_EXTS = array('pdf','jpg','jpeg','png','xls','xlsx','doc','docx','zip');
+
+            $file_name = $_FILES['file']['name'];
+            $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+            $file_size = $_FILES['file']['size'];
+
+            if($file_name=="") {
+              die("No file selected");
+            }
+            if (!in_array($file_ext, $FILE_EXTS)){
+              die("Selected file is invalid.");
+            }
+            if($_FILES['file']['size']>$maxsize) {
+                die("Filesize exceeded");
+            }
+
+            $uploaddir = upload_dir();
+            $uploadname = $ext.'_'.$_FILES['file']['name'];
+            $uploadfile = $uploaddir.$uploadname;
+
+            if (file_exists($uploadfile)) {
+                die("Duplicate found. This file already exists.");
+            }
+
+            if (empty($_POST["docsubject"])) {
+                 die("Missing Subject");
+            } else {
+                 $subject = test_input($_POST["docsubject"]);
+            }
+     
+            if ($_POST['docauthor']=="") {
+              $author = $_SESSION['id'];
+            } else {
+              $author = test_input($_POST["docauthor"]);  
+            }
+
+            $doctype = $_POST['doctype'];
+            if(move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
+                
+                try {
+                    $stmt = $db->prepare("INSERT IGNORE INTO DOCDB (doctype,title,author,filename,filesize,remarks,added,hrdbid,admindoctype,logtype,referenceno,sourceoffice,sourcename,destoffice,destname,resdate) VALUES (:doctype,:title,:author,:filename,:filesize,:remarks,:added,:hrdbid,:admintype,:logtype,:refnumber,:sourceoffice,:sourcename,:destoffice,:destname,:resdate)");
+                    $stmt->bindParam(':doctype', $doctype);
+                    $stmt->bindParam(':title', $_POST['docsubject']);
+                    $stmt->bindParam(':author', $_POST['author']);
+                    $stmt->bindParam(':filename', $uploadname);
+                    $stmt->bindParam(':filesize', $file_size);
+                    $stmt->bindParam(':remarks', $_POST['remarks']);
+                    $stmt->bindParam(':added', date("Y-m-d"));
+                    $stmt->bindParam(':hrdbid', $_SESSION['id']);
+                    $stmt->bindParam(':admintype', $_POST['admintype']);
+                    $stmt->bindParam(':logtype', $_POST['logtype']);
+                    $stmt->bindParam(':refnumber', $_POST['refnumber']);
+                    $stmt->bindParam(':sourceoffice', $_POST['sourceoffice']);
+                    $stmt->bindParam(':sourcename', $_POST['sourcename']);
+                    $stmt->bindParam(':destoffice', $_POST['destoffice']);
+                    $stmt->bindParam(':destname', $_POST['destname']);
+                    $stmt->bindParam(':resdate', $_POST['resdate']);
+                     
+                     
+                    $stmt->execute();
+                } catch(PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+
+                
+
+          if ($_POST['switch']>0) {
+                $refid = $db->lastInsertId();
+                sendEmail($refid,$uploadname,$doctype);
+                byteMe($_SESSION['id'],'upload',3);
+                echo "Success";
+          } else {
+            echo "Success";
+          }
+
+
+            }
+
+
+
+    }
+  
     if($_POST['action'] == "countDL") {
         $docdbidz = test_input($_POST["docdbid"]);  
             try {
