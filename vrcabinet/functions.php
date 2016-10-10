@@ -457,6 +457,7 @@ if(!empty($_POST))
                     $stmt->bindParam(':destname', $_POST['destname']);
                      $stmt->bindParam(':destpos', $_POST['destpos']);
                     $stmt->bindParam(':resdate', $_POST['resdate']);
+                    $stmt->bindParam(':lastedited', $_SESSION['id']);
 
 
                     $stmt->execute();
