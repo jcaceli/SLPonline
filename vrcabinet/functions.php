@@ -229,7 +229,17 @@ if(!empty($_POST))
 
         echo "edited";
     }
+   if($_POST['action'] == "updatecomm") {
+      $dt=date("Y-m-d");
+        $stmt = $db->prepare("UPDATE docdb_comments SET doc_comment=:dcom, added=:added, hrdbid=:hrdbid1 WHERE id=:id");
+        $stmt->bindParam(':id', $_POST['docdbid']);
+        $stmt->bindParam(':dcom', $_POST['dcom']);
+        $stmt->bindParam(':added', $dt);
+        $stmt->bindParam(':hrdbid1', $_SESSION['id']);
+        $stmt->execute();
 
+        echo "edited";
+    }
     if($_POST['action'] == "delete") {
         $docid = test_input($_POST['docdbid']);
 
@@ -246,7 +256,15 @@ if(!empty($_POST))
 
         echo "deleted";
     }
+    if($_POST['action'] == "deletecomm") {
+     
 
+        $stmt = $db->prepare("DELETE FROM docdb_comments WHERE id=:id ");
+        $stmt->bindParam(':id', $_POST['docdbid']);
+        $stmt->execute();
+
+        echo "deleted";
+    }
     if($_POST['action'] == "reupload") {
             $ext=date("mdY");
             $maxsize=9000000;
