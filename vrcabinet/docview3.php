@@ -1,5 +1,6 @@
 <?php
 require "../zxcd9.php";
+$_SESSION['pageid']=$_GET['id'];
 function getFilesize($bytes, $decimals = 2) {
     $size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
     $factor = floor((strlen($bytes) - 1) / 3);
@@ -7,14 +8,20 @@ function getFilesize($bytes, $decimals = 2) {
 }
 if (isset($_GET['id'])) {
   $_GET  = filter_input_array(INPUT_GET, FILTER_SANITIZE_NUMBER_INT);
-  $stmt = $db->prepare("SELECT m.remarks, m.doctype, m.added, m.title, m.filesize, m.filename, m.downloads, m.admindoctype, m.logtype, m.referenceno, m.sourceoffice, m.sourcename, m.sourcepos, m.destoffice, m.destname, m.destpos, m.deaddate, m.datereceived, m.docdate, n.firstname, n.id as hrid, m.author FROM DOCDB m LEFT JOIN HRDB n ON m.hrdbid=n.id WHERE m.id = :id");
+  $stmt = $db->prepare("SELECT m.remarks, m.doctype, m.added, m.title, m.filesize, m.filename,  m.admindoctype, m.logtype, m.referenceno, m.sourceoffice, m.sourcename, m.sourcepos, m.destoffice, m.destname, m.destpos,  m.docdate, n.firstname, n.id as hrid, m.author FROM DOCDB m LEFT JOIN HRDB n ON m.hrdbid=n.id WHERE m.id = :id");
   $stmt->bindParam(':id', $_GET['id']);
   $stmt->execute();
   $rowdv = $stmt->fetch();
   $file_ext = pathinfo($rowdv['filename'], PATHINFO_EXTENSION);
+
+
+
+
 } else {
   header("Location: index.php");
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -332,19 +339,19 @@ h3 {
 
               <!--comments-->
             <?php
-              $stmtcom = $db->prepare("SELECT m.doc_comment, t.firstname, m.added, t.id FROM docdb_comments m LEFT JOIN HRDB t ON m.hrdbid=t.id WHERE m.docdbid = :docdbid");
+              $stmtcom = $db->prepare("SELECT m.id,m.doc_comment, t.firstname, m.added, t.id FROM docdb_comments m LEFT JOIN HRDB t ON m.hrdbid=t.id WHERE m.docdbid = :docdbid");
               $stmtcom->bindParam(':docdbid', $_GET['id']);
               $stmtcom->execute();
               while ($row7 = $stmtcom->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
 
-                    echo "<tr><td>".$row7[0]." </td><td><span style='color:#999;font-size:13px'>by: ".$row7[1]." on ".date("m/d", strtotime($row7[2]))."</span></td><td style='text-align:center'><span class='glyphicon glyphicon-edit'></span> &nbsp;<span class='glyphicon glyphicon-remove'></span></td></tr>";
+                    echo "<tr><td hidden>".$row7[0]." </td><td>".$row7[1]." </td><td><span style='color:#999;font-size:13px'>by: ".$row7[2]." on ".date("m/d", strtotime($row7[3]))."</span></td><td style='text-align:center'><span class='glyphicon glyphicon-edit' id='editcomment' onclick='editcom(".$row7[0].");'></span> &nbsp;<span class='glyphicon glyphicon-remove' id='deletecomment' onclick='delcom(".$row7[0].");'></span></td></tr>";
               }
               if ($stmtcom->rowCount() <= 0) {
                 
               }
             ?>
               <!--comments-->
-              </table>
+              </table>  
 
         </div>
         <div class="row" style="padding-left:1em">
@@ -354,8 +361,8 @@ h3 {
             </div>
           </div>
           <div class="col-sm-2" style="margin-left:0;padding-left:0">
-            <div class="form-group">
-              <button class="btn btn-primary" id="postcomment">Post</button>
+            <div class="form-group"> 
+               <button class="btn btn-primary" id="postcomment">Post</button>
             </div>
           </div>
         </div>
@@ -432,12 +439,61 @@ $("#editfile").click(function(event) {
           data: formData,
           success: function(data) {
                   if (data == "visitpage") {
-                    location.href="editdetails.php"
+                    location.href="editdetails.php";
                   }
                 }
 
           });
 });
+function delcom(row){
+
+
+  var r = confirm("You are about to delete your comment. This will be recorded. Are you sure?");
+ if (r == true) {
+    var formData = {
+
+      'action'        : "deletecomm",
+      'docdbid'       : row
+     
+    };
+                $.ajax({
+                   url: "functions.php",
+                   type: "POST",
+                   data: formData,
+                   success: function(data)
+                   {
+                      if (data == "deleted") {
+                        alert("Success!");
+                         
+
+                          window.location.href = "../vrcabinet/docview3.php?id=<?php echo $_GET['id']; ?>";
+                      } else {
+                        alert(data);
+                          
+                      }
+                   }
+                });
+                //endAjax
+  }
+ //endpost
+}
+
+
+function editcom(row1) {
+        var formData = { 'editid' : row1 };
+        $.ajax({
+          type: "POST",
+          url: "docview3_edit.php",
+          data: formData,
+          success: function(data) {
+                  if (data == "visitpage") {
+                    location.href="docview3_edit.php";
+
+                  }
+                }
+
+          });
+}
 
 $("#reupfile").click(function(event) {
         var formData = { 'reupid' : '<?php echo $_GET["id"]; ?>' };
@@ -447,7 +503,7 @@ $("#reupfile").click(function(event) {
           data: formData,
           success: function(data) {
                   if (data == "visitpage") {
-                    location.href="reupload.php"
+                    location.href="reupload.php";
                   }
                 }
 
