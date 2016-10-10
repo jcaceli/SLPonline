@@ -235,7 +235,7 @@ table {
       <div class="row">
           <div class="col-md-12" id="searchblock">
                 <div class="col-md-offset-2 col-md-8" style="margin-top:0">
-                  <h2 style="font-weight:bold;margin-bottom:0">UPDATE REMARKS</h2>
+                  <h2 style="font-weight:bold;margin-bottom:0"><img src="../imgs/write.png" width="50" height="50" alt="update">&nbsp;UPDATE REMARKS</h2>
 
                 <form id="myForm" method="POST" enctype="multipart/form-data">
                   
