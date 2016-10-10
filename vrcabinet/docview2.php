@@ -342,20 +342,23 @@ h3 {
               </thead>
         
 
-              <!--comments-->
+           <!--comments-->
             <?php
-              $stmtcom = $db->prepare("SELECT m.doc_comment, t.firstname, m.added, t.id FROM docdb_comments m LEFT JOIN HRDB t ON m.hrdbid=t.id WHERE m.docdbid = :docdbid");
+              $stmtcom = $db->prepare("SELECT m.id,m.doc_comment, t.firstname, m.added, t.id FROM docdb_comments m LEFT JOIN HRDB t ON m.hrdbid=t.id WHERE m.docdbid = :docdbid");
               $stmtcom->bindParam(':docdbid', $_GET['id']);
               $stmtcom->execute();
               while ($row7 = $stmtcom->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
 
-                    echo "<tr><td>".$row7[0]." </td><td><span style='color:#999;font-size:13px'>by: ".$row7[1]." on ".date("m/d", strtotime($row7[2]))."</span></td><td style='text-align:center'><span class='glyphicon glyphicon-edit'></span> &nbsp;<span class='glyphicon glyphicon-remove'></span></td></tr>";
+                    echo "<tr><td hidden>".$row7[0]." </td><td>".$row7[1]." </td><td><span style='color:#999;font-size:13px'>by: ".$row7[2]." on ".date("m/d", strtotime($row7[3]))."</span></td><td style='text-align:center'><span class='glyphicon glyphicon-edit' id='editcomment' onclick='editcom(".$row7[0].");'></span> &nbsp;<span class='glyphicon glyphicon-remove' id='deletecomment' onclick='delcom(".$row7[0].");'></span></td></tr>";
               }
               if ($stmtcom->rowCount() <= 0) {
                 
               }
             ?>
-              <!--comments-->
+              <!--comments-->         
+              
+              
+              
               </table>
 
         </div>
@@ -413,6 +416,60 @@ $('#goDL').click(function(){
 
       });
 });
+    
+
+function delcom(row){
+
+
+  var r = confirm("You are about to delete your comment. This will be recorded. Are you sure?");
+ if (r == true) {
+    var formData = {
+
+      'action'        : "deletecomm",
+      'docdbid'       : row
+     
+    };
+                $.ajax({
+                   url: "functions.php",
+                   type: "POST",
+                   data: formData,
+                   success: function(data)
+                   {
+                      if (data == "deleted") {
+                        alert("Success!");
+                         
+
+                          window.location.href = "../vrcabinet/docview2.php?id=<?php echo $_GET['id']; ?>";
+                      } else {
+                        alert(data);
+                          
+                      }
+                   }
+                });
+                //endAjax
+  }
+ //endpost
+}
+
+
+function editcom(row1) {
+        var formData = { 'editid' : row1 };
+        $.ajax({
+          type: "POST",
+          url: "docview3_edit.php",
+          data: formData,
+          success: function(data) {
+                  if (data == "visitpage") {
+                    location.href="docview2_edit.php";
+
+                  }
+                }
+
+          });
+}    
+    
+    
+    
 $("#resendfile").click(function(event) {
 event.preventDefault();
 event.stopImmediatePropagation();
