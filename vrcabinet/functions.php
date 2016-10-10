@@ -438,7 +438,7 @@ if(!empty($_POST))
 
                 try {
                     move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile);
-                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, filename=:filename, filesize=:filesize, remarks=:remarks, added=:added, hrdbid=:hrdbid, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,sourcepos=:sourcepos,destoffice=:destoffice, destname=:destname,destpos=:destpos,resdate=:resdate WHERE id=:id"); 
+                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, filename=:filename, filesize=:filesize, remarks=:remarks, added=:added, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,sourcepos=:sourcepos,destoffice=:destoffice, destname=:destname,destpos=:destpos,resdate=:resdate,lastedited=:lastedited WHERE id=:id"); 
                     $stmt->bindParam(':id', $_SESSION['editid']);
                     $stmt->bindParam(':doctype', $_POST['doctype']);
                     $stmt->bindParam(':title', $_POST['docsubject']);
@@ -447,7 +447,6 @@ if(!empty($_POST))
                     $stmt->bindParam(':filesize', $file_size);
                     $stmt->bindParam(':remarks', $_POST['remarks']);
                     $stmt->bindParam(':added', date("Y-m-d"));
-                    $stmt->bindParam(':hrdbid', $_SESSION['id']);
                     $stmt->bindParam(':admintype', $_POST['admintype']);
                     $stmt->bindParam(':logtype', $_POST['logtype']);
                     $stmt->bindParam(':refnumber', $_POST['refnumber']);
