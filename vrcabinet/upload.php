@@ -408,6 +408,7 @@ console.log(selection);
              $("#admintypeholder").fadeOut(); $("#logtypeholder").fadeOut(); $("#refnumberholder").fadeOut(); $("#officeholder").fadeOut(); 
              $("#nameholder").fadeOut();$("#resdateholder").fadeOut(); 
              $("#posholder").fadeOut();
+              $('#refnumber').val(''); $('#admintype').val(''); 
     }
 }
 
@@ -501,7 +502,7 @@ $('#refnumber').val($('#admintype option:selected').val()+'<?php echo '-'.date('
                       <input class="form-control" placeholder="Document Title / Subject" style="" id="dsubject" name="dsubject" required/><center>
                   </div>
                   <div class="form-group" style="" id="authorholder">
-                      <input type="text" name="autocompleteajax2" id="autocompleteajax2" class="form-control" placeholder="Author (if applicable)"/>
+                      <input type="text" name="author" id="autocompleteajax2" class="form-control" placeholder="Author (if applicable)"/>
                       <input type="hidden" id="autocomplete-ajax-x-2" disabled="disabled"/>
                   </div>
 
@@ -945,8 +946,12 @@ $("#sendfeedback").click(function(event) {
 
       var picker = new Pikaday({ 
       field: $('#resdate')[0], 
-      format: 'M/D/YYYY'
+      format: 'M/D/YYYY', 
+      onSelect: function() {
+            $('#emaildate').html("dated <b style='color:red'>"+this.getMoment().format('M/D/YYYY')+"</b>");
+      }
     });
+
 
     
 
