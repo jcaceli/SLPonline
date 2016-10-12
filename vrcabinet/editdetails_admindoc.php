@@ -378,7 +378,7 @@ console.log(selection);
              $('#destoffice').val('<?php echo $rowadmin['destoffice']; ?>');
              $('#destname').val('<?php echo $rowadmin['destname']; ?>');
              $('#destpos').val('<?php echo $rowadmin['destpos']; ?>');
-             $('#resdate').val('<?php echo $rowadmin['resdate']; ?>');
+             $('#resdate').val('<?php echo $rowadmin['datereceived']; ?>');
            
     } else {
              $("#admintypeholder").fadeOut(); $("#logtypeholder").fadeOut(); $("#refnumberholder").fadeOut(); $("#sourceofficeholder").fadeOut(); 
@@ -389,9 +389,13 @@ console.log(selection);
              $('#destpos').val('');$('#sourcepos').val('');
     }
 }
+  
+function typeChange3(){
+$('#refnumber').val($('#admintype option:selected').val()+'<?php echo '-'.date('dYm').'-'.($rowz['id'] + 1) ?> ');
+}
 </script>
                   <div class="input-group" style="margin-bottom:0;margin-top:1em">
-                      <input id="uploadfilename" class="form-control" placeholder="Choose file.." disabled="disabled"  value="<?php echo $rowadmin['filename']; ?>" >
+                      <input id="uploadfilename" class="form-control" placeholder="Choose file.." disabled="disabled"  value="">
                       <div class="input-group-btn">
                         <div class="fileUpload btn btn-primary">
                             <span><span class="glyphicon glyphicon-folder-open"></span> &nbsp; Choose File</span>
@@ -437,28 +441,26 @@ console.log(selection);
                   </div>
 
                   <div class="form-group" margin-top:1em" id="admintypeholder">
-                      <select class="form-control" id="admintype" name="admintype" value="">
+                      <select class="form-control" id="admintype" name="admintype" onchange="typeChange3()" value="">
                            <option><?php echo $rowadmin['admindoctype']; ?></option>
                            <option >Select Admin Document Type</option>
 
                         <!-- get this --> 
                       <?php
-                      try {
+                         try {
                               $sql = $db->prepare("SELECT * FROM libhr_subdoctype order by hrsubdocname");
-                              //$prof->bindParam(':hrdbida', $_SESSION['pageid']);
-                              $sql->execute();
-                         //     $p=$prof->fetch(PDO::FETCH_ASSOC);
-                        
-                        while($hreventname=$sql->fetch(PDO::FETCH_ASSOC))
-                        {
+                            
+                              $sql->execute();              
+                                while($hreventname=$sql->fetch(PDO::FETCH_ASSOC))
+                                {
                       ?>
-                        <option value=" <?php echo $hreventname['hrsubdocname']; ?>"> <?php echo $hreventname['hrsubdocname']; ?> </option>
+                        <option value=" <?php echo $hreventname['hrsubdoccode'];?>"> <?php echo $hreventname['hrsubdocname']; ?> </option>
                     
                       <?php
-                        }
-                              } catch(PDOException $e) {
-                            echo "Error: " . $e->getMessage();
-                            }//en
+                                 }
+                             } catch(PDOException $e) {
+                                 echo "Error: " . $e->getMessage();
+                             }//en
                    
                         ?>
                     <!-- upto this -->
@@ -559,15 +561,15 @@ console.log(selection);
 
                   <div class="row">
                     <div class="col-sm-6">
-                      <div class="form-group" style="" id="ddate">
-                        <input class="form-control" placeholder="Date Written / Created" style="" id="ddate" value="<?php echo $rowadmin['added']; ?>" required/><center>
+                      <div class="form-group" style="" id="ddate1">
+                        <input class="form-control" placeholder="Date Written / Created" style="" id="ddate" name="ddate" value="<?php echo $rowadmin['docdate']; ?>" required/><center>
                           <div class="col-sm-8">
                           </div>
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group" id="resdateholder">
-                       <input class="form-control" placeholder="Response Deadline" style="" id="resdate" name="resdate" value="<?php echo $rowadmin['resdate']; ?>" required/><center>
+                       <input class="form-control" placeholder="Response Deadline" style="" id="resdate" name="resdate" value="<?php echo $rowadmin['datereceived']; ?>" required/><center>
                         <div class="col-sm-8">
                         </div>
                       </div>
@@ -866,11 +868,11 @@ $("#uploadBtnadmin").click(function(event) {
        fd.append('file', file1);
        fd.append('doctype', $('#doctypeselector option:selected').val());
        fd.append('docsubject', $('input[name=dsubject]').val());
-      fd.append('author', window.selectPartner2);
+      fd.append('author', $('input[name=author]').val());
        fd.append('ddate', $('input[name=ddate]').val());
       
        fd.append('remarks', $('textarea[name=remarks]').val());
-       fd.append('admintype', $('#admintype option:selected').val());
+       fd.append('admintype', $('#admintype option:selected').text());
        fd.append('logtype', $('#logtype option:selected').val());
        fd.append('refnumber', $('input[name=refnumber]').val());
        fd.append('sourceoffice', $('input[name=sourceoffice]').val());
@@ -954,7 +956,7 @@ $("#sendfeedback").click(function(event) {
     });
 
         var picker = new Pikaday({ 
-      field: $('#rdate')[0], 
+      field: $('#resdate')[0], 
       format: 'M/D/YYYY', 
       onSelect: function() {
             $('#emaildate').html("dated <b style='color:red'>"+this.getMoment().format('M/D/YYYY')+"</b>");
