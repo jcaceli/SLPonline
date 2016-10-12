@@ -514,15 +514,163 @@ if(!empty($_POST))
     }
 
 
+ if($_POST['action'] == "reuploadadmin"){
 
-    if($_POST['action'] == "reuploadadmin") {
+        if ($_POST['doctype']=="Admin Doc"){ //if admin doc
 
-    $parts = explode('/', $_POST['resdate']);
-    $resdate  = "$parts[2]-$parts[0]-$parts[1]";
 
-    $parts = explode('/', $_POST['ddate']);
-    $dateondoc  = "$parts[2]-$parts[0]-$parts[1]";
-    
+            $parts = explode('/', $_POST['resdate']);
+            $resdate3  = "$parts[2]-$parts[0]-$parts[1]";
+
+            $parts = explode('/', $_POST['ddate']);
+            $dateondoc3  = "$parts[2]-$parts[0]-$parts[1]";
+   
+            $ext=date("mdY");
+            $maxsize=9000000;
+            $FILE_EXTS = array('pdf','jpg','jpeg','png','xls','xlsx','doc','docx','zip');
+
+            $file_name = $_FILES['file']['name'];
+            $file_name = preg_replace("/ /", "-", $file_name);
+            $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+            $file_size = $_FILES['file']['size'];
+
+
+            $uploaddir = upload_dir();
+            $uploadname = $ext.'_'.$_FILES['file']['name'];
+            $uploadfile = $uploaddir.$uploadname;
+
+            if($file_name=="") { //if empty file
+            $parts = explode('/', $_POST['resdate']);
+            $resdate3  = "$parts[2]-$parts[0]-$parts[1]";
+
+            $parts = explode('/', $_POST['ddate']);
+            $dateondoc3  = "$parts[2]-$parts[0]-$parts[1]";
+                try {   
+                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, remarks=:remarks, added=:added, hrdbid=:hrdbid, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,sourcepos=:sourcepos,destoffice=:destoffice, destname=:destname,destpos=:destpos,datereceived=:resdate3,docdate=:dateondoc3,lastedited=:lastedited WHERE id=:id"); 
+                    $stmt->bindParam(':id', $_SESSION['editid']);
+                    $stmt->bindParam(':doctype', $_POST['doctype']);
+                    $stmt->bindParam(':title', $_POST['docsubject']);
+                    $stmt->bindParam(':author', $_POST['author']);
+                    $stmt->bindParam(':remarks', $_POST['remarks']);
+                    $stmt->bindParam(':added', date("Y-m-d",time() + 86400));
+                    $stmt->bindParam(':hrdbid', $_SESSION['id']);
+                    $stmt->bindParam(':admintype', $_POST['admintype']);
+                    $stmt->bindParam(':logtype', $_POST['logtype']);
+                    $stmt->bindParam(':refnumber', $_POST['refnumber']);
+                    $stmt->bindParam(':sourceoffice', $_POST['sourceoffice']);
+                    $stmt->bindParam(':sourcename', $_POST['sourcename']);
+                    $stmt->bindParam(':sourcepos', $_POST['sourcepos']);
+                    $stmt->bindParam(':destoffice', $_POST['destoffice']);
+                    $stmt->bindParam(':destname', $_POST['destname']);
+                    $stmt->bindParam(':destpos', $_POST['destpos']);
+                    $stmt->bindParam(':resdate3', $resdate3);
+                    $stmt->bindParam(':dateondoc3', $dateondoc3);
+                    $stmt->bindParam(':lastedited', $_SESSION['id']);
+
+                    $stmt->execute();
+                } catch(PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            
+         //  $direc = $_SERVER['DOCUMENT_ROOT']."/SLP.22/docs/".$uploadname;
+         //  unlink($direc);
+            echo "Success";
+            }//end if empty file
+            else
+            { // if not empty file
+
+            $parts = explode('/', $_POST['resdate']);
+            $resdate2  = "$parts[2]-$parts[0]-$parts[1]";
+
+            $parts = explode('/', $_POST['ddate']);
+            $dateondoc2  = "$parts[2]-$parts[0]-$parts[1]";
+   
+            $ext=date("mdY");
+            $maxsize=9000000;
+            $FILE_EXTS = array('pdf','jpg','jpeg','png','xls','xlsx','doc','docx','zip');
+
+            $file_name = $_FILES['file']['name'];
+            $file_name = preg_replace("/ /", "-", $file_name);
+            $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+            $file_size = $_FILES['file']['size'];
+           
+            if($file_name=="") {
+              die("No file selected");
+            }
+            if (!in_array($file_ext, $FILE_EXTS)){
+              die("Selected file is invalid.");
+            }
+            if($_FILES['file']['size']>$maxsize) {
+                die("Filesize exceeded");
+            }
+
+            $uploaddir = upload_dir();
+            $uploadname = $ext.'_'.$_FILES['file']['name'];
+            $uploadfile = $uploaddir.$uploadname;
+
+                try{
+                       $edit = $db->prepare("Select filename from docdb where id=:idoc");
+                        $edit->bindParam(':idoc',$_SESSION['editid']);
+                        $edit->execute();
+                           $edit_row = $edit->fetch(PDO::FETCH_ASSOC);
+                        unlink('/SLP.PH22
+                            /docs/'.$edit_row['filename']);
+                    }catch(PDOException $e){
+                      echo "Error. ". $e->getMessage();
+                    }
+
+            $parts = explode('/', $_POST['resdate']);
+            $resdate2  = "$parts[2]-$parts[0]-$parts[1]";
+
+            $parts = explode('/', $_POST['ddate']);
+            $dateondoc2  = "$parts[2]-$parts[0]-$parts[1]";
+            
+            if(is_uploaded_file($_FILES['file']['tmp_name'])) {
+
+                try {
+                    move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile);
+                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, filename=:filename, filesize=:filesize, remarks=:remarks, added=:added, hrdbid=:hrdbid, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,sourcepos=:sourcepos,destoffice=:destoffice, destname=:destname,destpos=:destpos,datereceived=:resdate2,docdate=:dateondoc2,lastedited=:lastedited WHERE id=:id"); 
+                    $stmt->bindParam(':id', $_SESSION['editid']);
+                    $stmt->bindParam(':doctype', $_POST['doctype']);
+                    $stmt->bindParam(':title', $_POST['docsubject']);
+                    $stmt->bindParam(':author', $_POST['author']);
+                    $stmt->bindParam(':filename', $uploadname);
+                    $stmt->bindParam(':filesize', $file_size);
+                    $stmt->bindParam(':remarks', $_POST['remarks']);
+                    $stmt->bindParam(':added', date("Y-m-d",time() + 86400));
+                    $stmt->bindParam(':hrdbid', $_SESSION['id']);
+                    $stmt->bindParam(':admintype', $_POST['admintype']);
+                    $stmt->bindParam(':logtype', $_POST['logtype']);
+                    $stmt->bindParam(':refnumber', $_POST['refnumber']);
+                    $stmt->bindParam(':sourceoffice', $_POST['sourceoffice']);
+                    $stmt->bindParam(':sourcename', $_POST['sourcename']);
+                    $stmt->bindParam(':sourcepos', $_POST['sourcepos']);
+                    $stmt->bindParam(':destoffice', $_POST['destoffice']);
+                    $stmt->bindParam(':destname', $_POST['destname']);
+                    $stmt->bindParam(':destpos', $_POST['destpos']);
+                    $stmt->bindParam(':resdate2', $resdate2);
+                    $stmt->bindParam(':dateondoc2', $dateondoc2);
+                    $stmt->bindParam(':lastedited', $_SESSION['id']);
+
+                    $stmt->execute();
+                } catch(PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+         //  $direc = $_SERVER['DOCUMENT_ROOT']."/SLP.22/docs/".$uploadname;
+         //  unlink($direc);
+            echo "Success";
+            } //end if not empty file
+
+       }//end if admin doc
+       else
+       { //not admin
+        $parts = explode('/', $_POST['resdate']);
+            $resdate1  = "$parts[2]-$parts[0]-$parts[1]";
+
+            $parts = explode('/', $_POST['ddate']);
+            $dateondoc1  = "$parts[2]-$parts[0]-$parts[1]";
+   
             $ext=date("mdY");
             $maxsize=9000000;
             $FILE_EXTS = array('pdf','jpg','jpeg','png','xls','xlsx','doc','docx','zip');
@@ -558,16 +706,16 @@ if(!empty($_POST))
                     }
 
             $parts = explode('/', $_POST['resdate']);
-            $resdate  = "$parts[2]-$parts[0]-$parts[1]";
+            $resdate1  = "$parts[2]-$parts[0]-$parts[1]";
 
             $parts = explode('/', $_POST['ddate']);
-            $dateondoc  = "$parts[2]-$parts[0]-$parts[1]";
+            $dateondoc1  = "$parts[2]-$parts[0]-$parts[1]";
 
             if(is_uploaded_file($_FILES['file']['tmp_name'])) {
 
                 try {
                     move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile);
-                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, filename=:filename, filesize=:filesize, remarks=:remarks, added=:added, hrdbid=:hrdbid, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,sourcepos=:sourcepos,destoffice=:destoffice, destname=:destname,destpos=:destpos,datereceived=:resdate,dateondoc=:dateondoc,lastedited=:lastedited WHERE id=:id"); 
+                    $stmt = $db->prepare("UPDATE DOCDB SET doctype=:doctype, title=:title, author=:author, filename=:filename, filesize=:filesize, remarks=:remarks, added=:added, hrdbid=:hrdbid, admindoctype=:admintype, logtype=:logtype,referenceno=:refnumber,sourceoffice=:sourceoffice,sourcename=:sourcename,sourcepos=:sourcepos,destoffice=:destoffice, destname=:destname,destpos=:destpos,datereceived=:resdate1,docdate=:dateondoc1,lastedited=:lastedited WHERE id=:id"); 
                     $stmt->bindParam(':id', $_SESSION['editid']);
                     $stmt->bindParam(':doctype', $_POST['doctype']);
                     $stmt->bindParam(':title', $_POST['docsubject']);
@@ -586,8 +734,8 @@ if(!empty($_POST))
                     $stmt->bindParam(':destoffice', $_POST['destoffice']);
                     $stmt->bindParam(':destname', $_POST['destname']);
                     $stmt->bindParam(':destpos', $_POST['destpos']);
-                    $stmt->bindParam(':resdate', $resdate);
-                    $stmt->bindParam(':dateondoc', $dateondoc);
+                    $stmt->bindParam(':resdate1', $resdate);
+                    $stmt->bindParam(':dateondoc1', $dateondoc1);
                     $stmt->bindParam(':lastedited', $_SESSION['id']);
 
                     $stmt->execute();
@@ -595,11 +743,11 @@ if(!empty($_POST))
                     echo "Error: " . $e->getMessage();
                 }
             }
-         //  $direc = $_SERVER['DOCUMENT_ROOT']."/SLP.22/docs/".$uploadname;
-         //  unlink($direc);
-            echo "Success";
-    }
 
+       }// end if not admin
+
+
+    }//end post reuploadadmin
 
 }//end post
      
