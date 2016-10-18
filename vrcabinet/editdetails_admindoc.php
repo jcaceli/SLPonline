@@ -1,8 +1,8 @@
 <?php
 require "../zxcd9.php";
 byteMe($_SESSION['id'],'vc_upload',0.10);
-if (isset($_POST['editid1'])) {
-  $_SESSION['editid'] = $_POST['editid1'];
+if (isset($_POST['editid'])) {
+  $_SESSION['editid'] = $_POST['editid'];
   die("visitpage");
 }
         $stmt = $db->prepare("SELECT * FROM DOCDB WHERE id=:id ");
@@ -369,7 +369,7 @@ function typeChange(){
 function typeChangeAdmin(){
 var selection = $('#doctypeselector option:selected').val();
 console.log(selection);
-    if (selection == "Administration Document") {
+    if (selection == "Admin Doc") {
              $("#admintypeholder").fadeIn(); $("#logtypeholder").fadeIn(); $("#refnumberholder").fadeIn(); $("#sourceofficeholder").fadeIn(); 
              $("#sourcenameholder").fadeIn();$("#destofficeholder").fadeIn(); $("#destnameholder").fadeIn(); $("#resdateholder").fadeIn();        
               $("#sourceposholder").fadeIn();$("#destposholder").fadeIn();
@@ -382,7 +382,7 @@ console.log(selection);
              $('#destoffice').val('<?php echo $rowadmin['destoffice']; ?>');
              $('#destname').val('<?php echo $rowadmin['destname']; ?>');
              $('#destpos').val('<?php echo $rowadmin['destpos']; ?>');
-             $('#resdate').val('<?php echo $rowadmin['resdate']; ?>');
+             $('#resdate').val('<?php echo $rowadmin['datereceived']; ?>');
            
     } else {
              $("#admintypeholder").fadeOut(); $("#logtypeholder").fadeOut(); $("#refnumberholder").fadeOut(); $("#sourceofficeholder").fadeOut(); 
@@ -392,6 +392,10 @@ console.log(selection);
              $('#sourcename').val('');$('#destoffice').val(''); $('#destname').val('');$('#resdate').val('');
              $('#destpos').val('');$('#sourcepos').val('');
     }
+}
+
+function typeChange3(){
+$('#refnumber').val($('#logtype option:selected').val()+'-'+$('#admintype option:selected').val()+'<?php echo '-'.date('dYm').'-'.($rowz['id'] + 1) ?>');
 }
 </script>
                   <div class="input-group" style="margin-bottom:0;margin-top:1em">
@@ -441,7 +445,7 @@ console.log(selection);
                   </div>
 
                   <div class="form-group" margin-top:1em" id="admintypeholder">
-                      <select class="form-control" id="admintype" name="admintype" value="">
+                      <select class="form-control" id="admintype" name="admintype" onchange="typeChange3()" value="">
                            <option><?php echo $rowadmin['admindoctype']; ?></option>
                            <option >Select Admin Document Type</option>
 
@@ -456,7 +460,7 @@ console.log(selection);
                         while($hreventname=$sql->fetch(PDO::FETCH_ASSOC))
                         {
                       ?>
-                        <option value=" <?php echo $hreventname['hrsubdocname']; ?>"> <?php echo $hreventname['hrsubdocname']; ?> </option>
+                        <option value=" <?php echo $hreventname['hrsubdoccode']; ?>"> <?php echo $hreventname['hrsubdocname']; ?> </option>
                     
                       <?php
                         }
@@ -472,11 +476,11 @@ console.log(selection);
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group" id="logtypeholder">
-                        <select class="form-control" id="logtype" name="logtype">
+                        <select class="form-control" id="logtype" name="logtype" onchange="typeChange3()">
                         <option><?php echo $rowadmin['logtype']; ?></option>
                         <option>Select Log Type</option>
-                        <option value="Incoming">Incoming</option>
-                        <option value="Outgoing">Outgoing</option>
+                        <option value="I">Incoming</option>
+                        <option value="O">Outgoing</option>
                   </select>
                           <div class="col-sm-8">
                           </div>
@@ -484,7 +488,7 @@ console.log(selection);
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group" id="refnumberholder">
-                       <input class="form-control" placeholder="Reference Number" value="<?php echo $rowadmin['referenceno']; ?>" id="refnumber" name="refnumber" required/><center>
+                       <input class="form-control" placeholder="Reference Number" value="<?php echo $rowadmin['referenceno']; ?>" id="refnumber" name="refnumber" disabled/><center>
                         <div class="col-sm-8">
                         </div>
                       </div>
@@ -563,15 +567,21 @@ console.log(selection);
 
                   <div class="row">
                     <div class="col-sm-6">
-                      <div class="form-group" style="" id="ddate">
-                        <input class="form-control" placeholder="Date on Document" style="" id="ddate" name="ddate" value="<?php echo $rowadmin['docdate']; ?>" required/><center>
+                      <div class="form-group" style="" id="ddate1">
+                        <input class="form-control" placeholder="Date on Document" style="" id="ddate" name="ddate" value="<?php 
+                        $dd = explode('-', $rowadmin['docdate']);
+                        $result1  = "$dd[1]-$dd[2]-$dd[0]";
+                       echo $result1;?>" required/><center>
                           <div class="col-sm-8">
                           </div>
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group" id="resdateholder">
-                       <input class="form-control" placeholder="Date Received" style="" id="resdate" name="resdate" value="<?php echo $rowadmin['resdate']; ?>" required/><center>
+                       <input class="form-control" placeholder="Date Received" style="" id="resdate" name="resdate" value="<?php 
+                        $rd = explode('-', $rowadmin['datereceived']);
+                        $result  = "$rd[1]-$rd[2]-$rd[0]";
+                       echo $result;?>" required/><center>
                         <div class="col-sm-8">
                         </div>
                       </div>
@@ -871,12 +881,12 @@ $("#uploadBtnadmin").click(function(event) {
        fd.append('file', file1);
        fd.append('doctype', $('#doctypeselector option:selected').val());
        fd.append('docsubject', $('input[name=dsubject]').val());
-      fd.append('author', window.selectPartner2);
+      fd.append('author',  $('input[name=author]').val());
        fd.append('ddate', $('input[name=ddate]').val());
       
        fd.append('remarks', $('textarea[name=remarks]').val());
        fd.append('admintype', $('#admintype option:selected').text());
-       fd.append('logtype', $('#logtype option:selected').val());
+       fd.append('logtype', $('#logtype option:selected').text());
        fd.append('refnumber', $('input[name=refnumber]').val());
        fd.append('sourceoffice', $('input[name=sourceoffice]').val());
        fd.append('sourcename', $('input[name=sourcename]').val());
