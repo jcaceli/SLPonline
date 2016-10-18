@@ -568,7 +568,7 @@ $('#refnumber').val($('#logtype option:selected').val()+'-'+$('#admintype option
                   </div>
 
                   <div class="form-group" style="">
-                      <textarea rows="3" class="form-control" placeholder="Description" style="padding-top:0.6em;resize:none" id="remarks" name="remarks" required></textarea><center>
+                      <textarea rows="3" class="form-control" placeholder="Remarks" style="padding-top:0.6em;resize:none" id="remarks" name="remarks" required></textarea><center>
                   </div>
                   <div style="display:block;font-weight:bold">Send a notification for this upload: &nbsp; <div id="theswitch" class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-animate bootstrap-switch-id-custom-switch-01 bootstrap-switch-off"><div class="bootstrap-switch-container"><span class="bootstrap-switch-handle-on bootstrap-switch-primary">YES</span><label class="bootstrap-switch-label">&nbsp;</label><span class="bootstrap-switch-handle-off bootstrap-switch-default">NO</span><input type="checkbox" checked="" data-toggle="switch" id="custom-switch-01"></div></div></div>
                   <div id="notificationpanel" style="margin-top:1em;display:none">
