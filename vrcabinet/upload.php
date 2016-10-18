@@ -414,7 +414,7 @@ console.log(selection);
 }
 
 function typeChange3(){
-$('#refnumber').val($('#admintype option:selected').val()+'<?php echo '-'.date('dYm').'-'.($rowz['id'] + 1) ?>');
+$('#refnumber').val($('#logtype option:selected').val()+'-'+$('#admintype option:selected').val()+'<?php echo '-'.date('dYm').'-'.($rowz['id'] + 1) ?>');
 }
 
 
@@ -478,10 +478,10 @@ $('#refnumber').val($('#admintype option:selected').val()+'<?php echo '-'.date('
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group" style="display: none" id="logtypeholder">
-                       <select class="form-control" id="logtype" name="logtype">
+                       <select class="form-control" id="logtype" name="logtype" onchange="typeChange3()">
                         <option value="">Select Log Type</option>
-                        <option value="Incoming" id="in">Incoming</option>
-                        <option value="Outgoing" id="out">Outgoing</option>
+                        <option value="I" id="in">Incoming</option>
+                        <option value="O" id="out">Outgoing</option>
                       
                         </select>
                       
@@ -569,7 +569,7 @@ $('#refnumber').val($('#admintype option:selected').val()+'<?php echo '-'.date('
                   </div>
 
                   <div class="form-group" style="">
-                      <textarea rows="3" class="form-control" placeholder="Description" style="padding-top:0.6em;resize:none" id="remarks" name="remarks" required></textarea><center>
+                      <textarea rows="3" class="form-control" placeholder="Remarks" style="padding-top:0.6em;resize:none" id="remarks" name="remarks" required></textarea><center>
                   </div>
                   <div style="display:block;font-weight:bold">Send a notification for this upload: &nbsp; <div id="theswitch" class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-animate bootstrap-switch-id-custom-switch-01 bootstrap-switch-off"><div class="bootstrap-switch-container"><span class="bootstrap-switch-handle-on bootstrap-switch-primary">YES</span><label class="bootstrap-switch-label">&nbsp;</label><span class="bootstrap-switch-handle-off bootstrap-switch-default">NO</span><input type="checkbox" checked="" data-toggle="switch" id="custom-switch-01"></div></div></div>
                   <div id="notificationpanel" style="margin-top:1em;display:none">
@@ -863,7 +863,7 @@ $("#uploadBtn").click(function(event) {
        fd.append('ddate', $('input[name=ddate]').val());
        fd.append('remarks', $('textarea[name=remarks]').val());
        fd.append('admintype', $('#admintype option:selected').text());
-       fd.append('logtype', $('#logtype option:selected').val());
+       fd.append('logtype', $('#logtype option:selected').text());
        fd.append('refnumber', $('input[name=refnumber]').val());
        fd.append('sourceoffice', $('input[name=sourceoffice]').val());
        fd.append('sourcename', $('input[name=sourcename]').val());
@@ -872,7 +872,7 @@ $("#uploadBtn").click(function(event) {
        fd.append('resdate', $('input[name=resdate]').val());
        fd.append('destpos', $('input[name=destpos]').val());
        fd.append('sourcepos', $('input[name=sourcepos]').val());
-       
+        fd.append('switch', switchClass);
        fd.append('emailarray', emailfinal.toString());
       $.ajax({
                 url: 'functions.php',
