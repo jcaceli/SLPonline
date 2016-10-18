@@ -297,7 +297,7 @@ h3 {
       </div>
       <div class="row" style="padding-top:1em;text-align:left;padding-left:3em;margin-top:0.5em">
             <div class="col-sm-9">
-              <b>Description:</b><br><?php echo $rowdv['remarks']; ?>
+              <b>Initial Remarks:</b><br><?php echo $rowdv['remarks']; ?>
             </div>
             <div class="col-sm-3" style="text-align:center;padding-right:5em;padding-left:3em">
                 <div class="file-icon file-icon-lg" data-type="<?php echo $file_ext; ?>" style="margin-bottom:10px;text-align:center;width:100%;color:#fff;text-align:left;font-size:11px;padding-left:0.5em;padding-top:0.5em">Downloads: <?php echo $rowdv['downloads']; ?><br>Size: <?php echo getFilesize($rowdv['filesize']); ?></div>
