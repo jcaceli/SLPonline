@@ -414,9 +414,8 @@ console.log(selection);
 }
 
 function typeChange3(){
-$('#refnumber').val($('#admintype option:selected').val()+'<?php echo '-'.date('dYm').'-'.($rowz['id'] + 1) ?>');
+$('#refnumber').val($('#logtype option:selected').val()+'-'+$('#admintype option:selected').val()+'<?php echo '-'.date('dYm').'-'.($rowz['id'] + 1) ?>');
 }
-
 
 </script>
                   <div class="form-group" style="margin-top:1em">
@@ -478,10 +477,10 @@ $('#refnumber').val($('#admintype option:selected').val()+'<?php echo '-'.date('
                   <div class="row">
                     <div class="col-sm-6">
                       <div class="form-group" style="display: none" id="logtypeholder">
-                       <select class="form-control" id="logtype" name="logtype">
+                       <select class="form-control" id="logtype" name="logtype" onchange="typeChange3()">
                         <option value="">Select Log Type</option>
-                        <option value="Incoming" id="in">Incoming</option>
-                        <option value="Outgoing" id="out">Outgoing</option>
+                        <option value="I" id="in">Incoming</option>
+                        <option value="O" id="out">Outgoing</option>
                       
                         </select>
                       
@@ -857,13 +856,14 @@ $("#uploadBtn").click(function(event) {
        file1 = $('#theupload').prop('files')[0];
        fd.append('action', 'upload');
        fd.append('file', file1);
+
        fd.append('doctype', $('#doctypeselector option:selected').val());
        fd.append('docsubject', $('input[name=dsubject]').val());
        fd.append('author', $('#autocompleteajax2').val());
        fd.append('ddate', $('input[name=ddate]').val());
        fd.append('remarks', $('textarea[name=remarks]').val());
        fd.append('admintype', $('#admintype option:selected').text());
-       fd.append('logtype', $('#logtype option:selected').val());
+       fd.append('logtype', $('#logtype option:selected').text());
        fd.append('refnumber', $('input[name=refnumber]').val());
        fd.append('sourceoffice', $('input[name=sourceoffice]').val());
        fd.append('sourcename', $('input[name=sourcename]').val());
@@ -872,7 +872,7 @@ $("#uploadBtn").click(function(event) {
        fd.append('resdate', $('input[name=resdate]').val());
        fd.append('destpos', $('input[name=destpos]').val());
        fd.append('sourcepos', $('input[name=sourcepos]').val());
-       
+       fd.append('switch', switchClass);
        fd.append('emailarray', emailfinal.toString());
       $.ajax({
                 url: 'functions.php',
