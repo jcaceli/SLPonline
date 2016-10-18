@@ -1,9 +1,9 @@
 <?php
-require "../zxcd9.php";
+
 require("../mailer/PHPMailerAutoload.php");
 require("../mailer/class.phpmailer.php");
 require("../mailer/class.smtp.php");
-
+require "../zxcd9.php";
 function upload_dir(){
   $dir = $_SERVER['DOCUMENT_ROOT']."/docs/";
   return($dir);
@@ -387,10 +387,11 @@ if(!empty($_POST))
                             $uploaddir = upload_dir();
                             $uploadname = $ext.'_'.$_FILES['file']['name'];
                             $uploadfile = $uploaddir.$uploadname;
-                            $doctype = $_POST['doctype'];
+                           
 
                      if ($file_name=="") { // filename is empty 
                             try{
+                             $doctype = $_POST['doctype'];
                          $stmt = $db->prepare("INSERT IGNORE INTO DOCDB (doctype,title,author,remarks,added,hrdbid,admindoctype,logtype,referenceno,sourceoffice,sourcename,sourcepos,destoffice,destname,destpos,datereceived,docdate) VALUES (:doctype,:title,:author,:remarks,:added,:hrdbid,:admintype,:logtype,:refnumber,:sourceoffice,:sourcename,:sourcepos,:destoffice,:destname,:destpos,:resdate,:docdate)");
                                     $stmt->bindParam(':doctype', $doctype);
                                     $stmt->bindParam(':title', $_POST['docsubject']);
@@ -414,10 +415,28 @@ if(!empty($_POST))
                                 } catch(PDOException $e) {
                                     echo "Error: " . $e->getMessage();
                                 }
+                                if ($_POST['switch']>0) {
+                                    $refid = $db->lastInsertId();
+                                    sendEmail($refid,$uploadname,$doctype);
+                                    byteMe($_SESSION['id'],'upload',3);
+                                    echo "Success";
+                              } else {
+                                echo "Success";
+                              }
 
                         }//end if empty
                         else//not empty
-                        {                        
+                        {     $ext=date("mdY");
+                            $maxsize=9000000;
+                            $FILE_EXTS = array('pdf','jpg','jpeg','png','xls','xlsx','doc','docx','zip');
+                            $file_name = $_FILES['file']['name'];
+                            $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
+                            $file_size = $_FILES['file']['size'];      
+                            $uploaddir = upload_dir();
+                            $uploadname = $ext.'_'.$_FILES['file']['name'];
+                            $uploadfile = $uploaddir.$uploadname;
+                        
+                                            
                             if (file_exists($uploadfile)) {
                                 die("Duplicate found. This file already exists.");
                             }
@@ -459,16 +478,18 @@ if(!empty($_POST))
                                 } catch(PDOException $e) {
                                     echo "Error: " . $e->getMessage();
                                 }
-                            }
-                        }
-                              if ($_POST['switch']>0) {
+                                 if ($_POST['switch']>0) {
                                     $refid = $db->lastInsertId();
-                                    sendEmail($refid,$uploadname1,$doctype1);
+                                    sendEmail($refid,$uploadname,$doctype);
                                     byteMe($_SESSION['id'],'upload',3);
                                     echo "Success";
                               } else {
                                 echo "Success";
                               }
+                            }
+                           
+                        }
+                              
                 } //end if admindoc
                else //if not admin they required to insert a file 
               {
@@ -479,7 +500,11 @@ if(!empty($_POST))
                             $file_name = $_FILES['file']['name'];
                             $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
                             $file_size = $_FILES['file']['size'];
-
+ 			    $uploaddir = upload_dir();
+                            $uploadname = $ext.'_'.$_FILES['file']['name'];
+                            $uploadfile = $uploaddir.$uploadname;
+                            $doctype = $_POST['doctype'];
+                            
                             if($file_name=="") {
                               die("No file selected");
                             }
@@ -489,9 +514,6 @@ if(!empty($_POST))
                             if($_FILES['file']['size']>$maxsize) {
                                 die("Filesize exceeded");
                             }
-                            $uploaddir = upload_dir();
-                            $uploadname = $ext.'_'.$_FILES['file']['name'];
-                            $uploadfile = $uploaddir.$uploadname;
                             if (file_exists($uploadfile)) {
                                 die("Duplicate found. This file already exists.");
                             }
@@ -506,7 +528,7 @@ if(!empty($_POST))
                             } else {
                               $author = test_input($_POST["docauthor"]);  
                             }
-                               $doctype = $_POST['doctype'];
+                             
                             if(move_uploaded_file($_FILES['file']['tmp_name'], $uploadfile)) {
                                 
                                 try {
@@ -535,9 +557,7 @@ if(!empty($_POST))
                                 } catch(PDOException $e) {
                                     echo "Error: " . $e->getMessage();
                                 }
-                            }
- 
-                     if ($_POST['switch']>0) {
+                                 if ($_POST['switch']>0) {
                                     $refid = $db->lastInsertId();
                                     sendEmail($refid,$uploadname,$doctype);
                                     byteMe($_SESSION['id'],'upload',3);
@@ -545,6 +565,9 @@ if(!empty($_POST))
                               } else {
                                 echo "Success";
                               }
+                            }
+ 
+                    
 
              }//end of else
     }
@@ -646,12 +669,11 @@ if($_POST['action'] == "reuploadadmin"){
             $uploadfile = $uploaddir.$uploadname;
 
                 try{
-                       $edit = $db->prepare("Select filename from docdb where id=:idoc");
+                       $edit = $db->prepare("SELECT filename FROM DOCDB WHERE id=:idoc");
                         $edit->bindParam(':idoc',$_SESSION['editid']);
                         $edit->execute();
                            $edit_row = $edit->fetch(PDO::FETCH_ASSOC);
-                        unlink('/SLP.PH22
-                            /docs/'.$edit_row['filename']);
+                        unlink('/docs/'.$edit_row['filename']);
                     }catch(PDOException $e){
                       echo "Error. ". $e->getMessage();
                     }
