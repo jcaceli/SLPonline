@@ -305,7 +305,7 @@ h3 {
       </div>
       <div class="row" style="padding-top:1em;text-align:left;padding-left:3em;margin-top:1em">
             <div class="col-sm-3">
-              <b>Description:</b><br><?php echo $rowdv['remarks']; ?>
+              <b>Initial Remarks:</b><br><?php echo $rowdv['remarks']; ?>
             </div>
             <div class="col-sm-3">
               <b>Source:</b><br><?php echo $rowdv['sourcename']; ?><br><?php echo $rowdv['sourcepos']; ?><br><?php echo $rowdv['sourceoffice']; ?>
