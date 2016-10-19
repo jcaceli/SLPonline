@@ -297,7 +297,7 @@ h3 {
       </div>
       <div class="row" style="padding-top:1em;text-align:left;padding-left:3em;margin-top:0.5em">
             <div class="col-sm-9">
-              <b>Description:</b><br><?php echo $rowdv['remarks']; ?>
+              <b>Initial Remarks:</b><br><?php echo $rowdv['remarks']; ?>
             </div>
             <div class="col-sm-3" style="text-align:center;padding-right:5em;padding-left:3em">
                 <div class="file-icon file-icon-lg" data-type="<?php echo $file_ext; ?>" style="margin-bottom:10px;text-align:center;width:100%;color:#fff;text-align:left;font-size:11px;padding-left:0.5em;padding-top:0.5em">Downloads: <?php echo $rowdv['downloads']; ?><br>Size: <?php echo getFilesize($rowdv['filesize']); ?></div>
@@ -334,9 +334,17 @@ h3 {
               $stmtcom = $db->prepare("SELECT m.id,m.doc_comment, t.firstname, m.added, t.id FROM docdb_comments m LEFT JOIN HRDB t ON m.hrdbid=t.id WHERE m.docdbid = :docdbid");
               $stmtcom->bindParam(':docdbid', $_GET['id']);
               $stmtcom->execute();
-              while ($row7 = $stmtcom->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+                while ($row7 = $stmtcom->fetch(PDO::FETCH_NUM, PDO::FETCH_ORI_NEXT)) {
+     
+                  if ($_SESSION['id']==$row7[4]) {
 
-                    echo "<tr><td>".$row7[1]." </td><td><span style='color:#999;font-size:13px'>by: ".$row7[2]." on ".date("m/d", strtotime($row7[3]))."</span></td><td style='text-align:center'><span class='glyphicon glyphicon-edit' id='editcomment' onclick='editcom(".$row7[0].");'></span> &nbsp;<span class='glyphicon glyphicon-remove' id='deletecomment' onclick='delcom(".$row7[0].");'></span></td></tr>";
+                    echo "<tr><td hidden>".$row7[0]." </td><td>".$row7[1]." </td><td><span style='color:#999;font-size:13px'>by: ".$row7[2]." on ".date("m/d", strtotime($row7[3]))."</span></td><td style='text-align:center'><span class='glyphicon glyphicon-edit' id='editcomment' onclick='editcom(".$row7[0].");'></span> &nbsp;<span class='glyphicon glyphicon-remove' id='deletecomment' onclick='delcom(".$row7[0].");'></span></td></tr>";
+                      }
+                      else
+                      {
+                     echo "<tr><td hidden>".$row7[0]." </td><td>".$row7[1]." </td><td><span style='color:#999;font-size:13px'>by: ".$row7[2]." on ".date("m/d", strtotime($row7[3]))."</span></td><td style='text-align:center' hidden><span class='glyphicon glyphicon-edit' id='editcomment' onclick='editcom(".$row7[0].");'></span> &nbsp;<span class='glyphicon glyphicon-remove' id='deletecomment' onclick='delcom(".$row7[0].");'></span></td></tr>";
+
+                      }
               }
               if ($stmtcom->rowCount() <= 0) {
                 
@@ -468,11 +476,11 @@ $("#editfile").click(function(event) {
         var formData = { 'editid' : '<?php echo $_GET["id"]; ?>' };
         $.ajax({
           type: "POST",
-          url: "editdetails.php",
+          url: "editdetails_admindoc.php",
           data: formData,
           success: function(data) {
                   if (data == "visitpage") {
-                    location.href="editdetails.php"
+                    location.href="editdetails_admindoc.php"
                   }
                 }
 
